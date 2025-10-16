@@ -4,7 +4,7 @@ from tools import check_or_create_employees_index
 # import sqlite3
 # from google.adk.tools import FunctionTool
 
-from google.genai import Client
+
 import os 
 
 
@@ -22,22 +22,24 @@ from dotenv import load_dotenv
 
 from google.adk.agents import Agent
 from google.adk.tools import FunctionTool
+from google.genai import Client
+import os 
 
 
 
 # This loads the .env file into environment variables
-load_dotenv()
+#load_dotenv()
 
 
 
-# os.environ["GOOGLE_CLOUD_PROJECT"] ="sadia-sandpit"
-# os.environ["GOOGLE_CLOUD_LOCATION"] = "us-central1"
-# os.environ["GOOGLE_GENAI_USE_VERTEXAI"]="FALSE"
-# os.environ["MODEL"]= "gemini-2.0-flash"
-# os.environ["GOOGLE_API_KEY"] = "AIzaSyB290r-QUhzRxanESuVud3I-z2PWyTqB8w"
+os.environ["GOOGLE_CLOUD_PROJECT"] ="sadia-sandpit"
+os.environ["GOOGLE_CLOUD_LOCATION"] = "us-central1"
+os.environ["GOOGLE_GENAI_USE_VERTEXAI"]="FALSE"
+os.environ["MODEL"]= "gemini-2.0-flash"
+os.environ["GOOGLE_API_KEY"] = ""
 
 
-
+genaiclient = Client(vertexai=True, project="sadia-sandpit", location="us-central1")
 
 
 
@@ -91,7 +93,7 @@ async def start_scheduler():
     cron_trigger = CronTrigger(minute='*/1')  
     scheduler.add_job(call_agent_query, trigger=cron_trigger, id="nightly_agent_check", max_instances=1)
     scheduler.start()
-    print("Scheduler started. Agent task will run daily at 9:00 PM.")
+    print("Scheduler started. Agent task will run daily at 2:00 PM.")
 
    # Keep the scheduler running
     await asyncio.Event().wait()
