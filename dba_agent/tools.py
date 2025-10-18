@@ -68,10 +68,3 @@ def check_or_create_employees_index() -> Dict[str, Any]:
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
-    
-# ✅ ADK-compatible wrapper
-# check_or_create_index_tool = Tool.from_function(
-#     check_or_create_employees_index,
-#     name="check_or_create_employees_index",
-#     description="Checks for indexes on the 'employees' table "
-# )
