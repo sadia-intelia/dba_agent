@@ -12,17 +12,15 @@ from .tools import check_or_create_employees_index
 GEMINI_MODEL = "gemini-2.0-flash"
 
 
-# CPU Information Agent
-index_checking_agent = LlmAgent(
-    name="index_checking_agent",
-    model=GEMINI_MODEL,
-    instruction="""You are a DBA Information Agent.
-
-            "You are a database monitoring assistant. "
-            "You check database health, check index."
-        
-    """,
-    description="Gathers and analyzes CPU information",
-    tools=[check_or_create_employees_index],
-    output_key="index_info",
-)
+def create_index_checking_agent():
+    return LlmAgent(
+        name="index_checking_agent",
+        model=GEMINI_MODEL,
+        instruction="""
+            You are a DBA Information Agent.
+            You check database health, check index.
+        """,
+        description="Check employee index",
+        tools=[check_or_create_employees_index],
+        output_key="index_info",
+    )

@@ -1,3 +1,3 @@
-"""System report synthesizer agent for system monitoring."""
+from .agent import create_system_report_synthesizer
 
-from .agent import system_report_synthesizer
+__all__ = ["create_system_report_synthesizer"]
