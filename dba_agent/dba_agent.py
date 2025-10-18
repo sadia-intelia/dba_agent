@@ -24,10 +24,10 @@ from google.adk.agents import Agent
 from google.adk.agents import ParallelAgent, SequentialAgent
 from google.adk.tools import FunctionTool
 from google.genai import Client
-import os 
+from dotenv import load_dotenv
+import os
 
-# from dba_agent.sub_agents.db_info_agent import db_info_agent
-# from dba_agent.sub_agents.index_checking_agent import index_checking_agent
+
 from dba_agent.sub_agents.synthesizer_agent import create_system_report_synthesizer
 # Correct imports in your main file (like dba_agent.py)
 
@@ -36,15 +36,15 @@ from dba_agent.sub_agents.db_info_agent.agent import create_db_info_agent
 
 
 # This loads the .env file into environment variables
-#load_dotenv()
+load_dotenv()
 
 
 
-os.environ["GOOGLE_CLOUD_PROJECT"] ="sadia-sandpit"
-os.environ["GOOGLE_CLOUD_LOCATION"] = "us-central1"
-os.environ["GOOGLE_GENAI_USE_VERTEXAI"]="FALSE"
-os.environ["MODEL"]= "gemini-2.0-flash"
-os.environ["GOOGLE_API_KEY"] = "AIzaSyB290r-QUhzRxanESuVud3I-z2PWyTqB8w"
+GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
+GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION")
+GOOGLE_GENAI_USE_VERTEXAI = os.getenv("GOOGLE_GENAI_USE_VERTEXAI")
+MODEL = os.getenv("MODEL")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 
 genaiclient = Client(vertexai=True, project="sadia-sandpit", location="us-central1")
