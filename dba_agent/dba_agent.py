@@ -1,6 +1,6 @@
 # from google.adk.agents import Agent
 # from datetime import datetime
-from tools import check_or_create_employees_index
+from dba_agent.tools import check_or_create_employees_index
 # import sqlite3
 # from google.adk.tools import FunctionTool
 
@@ -21,10 +21,14 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv
 
 from google.adk.agents import Agent
+from google.adk.agents import ParallelAgent, SequentialAgent
 from google.adk.tools import FunctionTool
 from google.genai import Client
 import os 
 
+from dba_agent.sub_agents.db_info_agent import db_info_agent
+from dba_agent.sub_agents.index_checking_agent import index_checking_agent
+from dba_agent.sub_agents.synthesizer_agent import system_report_synthesizer
 
 
 # This loads the .env file into environment variables
@@ -36,7 +40,7 @@ os.environ["GOOGLE_CLOUD_PROJECT"] ="sadia-sandpit"
 os.environ["GOOGLE_CLOUD_LOCATION"] = "us-central1"
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"]="FALSE"
 os.environ["MODEL"]= "gemini-2.0-flash"
-os.environ["GOOGLE_API_KEY"] = ""
+os.environ["GOOGLE_API_KEY"] = "AIzaSyB290r-QUhzRxanESuVud3I-z2PWyTqB8w"
 
 
 genaiclient = Client(vertexai=True, project="sadia-sandpit", location="us-central1")
@@ -44,17 +48,27 @@ genaiclient = Client(vertexai=True, project="sadia-sandpit", location="us-centra
 
 
 
-run_sql_tool = FunctionTool(check_or_create_employees_index)
+#run_sql_tool = FunctionTool(check_or_create_employees_index)
 
-root_agent = Agent(
-        name="dba_agent",
-        instruction=(
-            "You are a database monitoring assistant. "
-            "You check database health, check index."
-        ),
-        model="gemini-2.0-flash",  # Light LLM
-        tools=[run_sql_tool] # Optional custom tools
-    )
+db_info_gatherer = ParallelAgent(
+    name="db_info_gatherer",
+    sub_agents=[index_checking_agent,db_info_agent],
+)
+
+# --- 2. Create Sequential Pipeline to gather info in parallel, then synthesize ---
+root_agent = SequentialAgent(
+    name="system_monitor_agent",
+    sub_agents=[db_info_gatherer, system_report_synthesizer],
+)
+# root_agent = Agent(
+#         name="dba_agent",
+#         instruction=(
+#             "You are a database monitoring assistant. "
+#             "You check database health, check index."
+#         ),
+#         model="gemini-2.0-flash",  # Light LLM
+#         tools=[run_sql_tool] # Optional custom tools
+#     )
 
 print(type(root_agent))  # <class 'google.adk.agents.llm_agent.LlmAgent'> — expected
 
@@ -81,6 +95,13 @@ async def call_agent_query():
             if event.content and event.content.parts:
                 print("Agent final output:", event.content.parts[0].text)
             break
+        
+            # if event.content and event.content.parts:
+            #     for part in event.content.parts:
+            #         if hasattr(part, "text"):
+            #             print(part.text)
+            # break
+
 
 
 

@@ -1,0 +1,28 @@
+"""
+DB Lock Information Agent
+
+This agent is responsible for checking database/table locked and generate alert
+"""
+
+from google.adk.agents import LlmAgent
+
+from .tools import check_or_create_employees_index
+
+# --- Constants ---
+GEMINI_MODEL = "gemini-2.0-flash"
+
+
+# CPU Information Agent
+index_checking_agent = LlmAgent(
+    name="index_checking_agent",
+    model=GEMINI_MODEL,
+    instruction="""You are a DBA Information Agent.
+
+            "You are a database monitoring assistant. "
+            "You check database health, check index."
+        
+    """,
+    description="Gathers and analyzes CPU information",
+    tools=[check_or_create_employees_index],
+    output_key="index_info",
+)
